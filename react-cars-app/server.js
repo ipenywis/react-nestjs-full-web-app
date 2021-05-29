@@ -1,4 +1,5 @@
 const express = require("express");
+
 const path = require("path");
 const app = express();
 
@@ -12,4 +13,4 @@ app.get("/", function (req, res) {
 
 app.listen(PORT);
 
-console.info("Server is Running on PORT : ", PORT);
+console.log("React Server is Running on PORT: ", PORT);

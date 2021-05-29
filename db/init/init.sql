@@ -1,4 +1,0 @@
-USE mysql;
-CREATE USER 'root'@'%' IDENTIFIED BY 'pass123';
-GRANT ALL ON *.* TO 'root'@'%';
-FLUSH PRIVILEGES;

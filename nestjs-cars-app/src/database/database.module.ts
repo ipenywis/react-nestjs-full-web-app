@@ -5,13 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: async () => {
-        return Object.assign(
+      useFactory: async () =>
+        Object.assign(
           await getConnectionOptions(
             process.env.NODE_ENV === 'production' ? 'prod' : 'dev',
           ),
-        );
-      },
+        ),
     }),
   ],
   exports: [TypeOrmModule],
