@@ -1,0 +1,32 @@
+[
+  {
+    "name": "dev",
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "",
+    "database": "yourcar",
+    "entities": ["dist/**/entities/*{.ts,.js}"],
+    "synchronize": true,
+    "migrations": ["dist/migrations/*{.ts,.js}"],
+    "cli": {
+      "migrationsDir": "src/migrations"
+    }
+  },
+  {
+    "name": "prod",
+    "type": "mysql",
+    "host": "mysqldb",
+    "port": 3306,
+    "username": "root",
+    "password": "pass123",
+    "database": "yourcar",
+    "entities": ["dist/**/entities/*{.ts,.js}"],
+    "synchronize": true,
+    "migrations": ["dist/migrations/*{.ts,.js}"],
+    "cli": {
+      "migrationsDir": "src/migrations"
+    }
+  }
+]

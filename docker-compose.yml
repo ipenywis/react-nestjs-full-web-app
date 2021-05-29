@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql
+    #    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass123
+      - MYSQL_DATABASE=yourcar
+    ports:
+      - 3306:3306
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - shared-network
+    volumes:
+      #      - ./db/init:/docker-entrypoint-initdb.d
+      - db-config:/etc/mysql
+      - db-data:/var/lib/mysql
+      - ./db/backup/files:/data_backup/data
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-prod
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    #    command: sh -c './bin/wait-for -t 0 api-prod:9000 && ./bin/wait-for -t 0 app-prod:3000'
+    command: /bin/sh -c "nginx -g 'daemon off;'"
+    depends_on:
+      api-prod:
+        condition: service_healthy
+      app-prod:
+        condition: service_started
+    networks:
+      - shared-network
+
+  api-prod:
+    container_name: nestjs_api_prod
+    image: nestjs-api-prod:1.0.0
+    build:
+      context: nestjs-cars-app
+      target: production
+      dockerfile: Dockerfile
+    #    command: bash -c 'while !</dev/tcp/mysqldb/3306; do sleep 1; done; yarn start:prod'
+    command: sh -c './bin/wait-for -t 0 mysqldb:3306 -- yarn start:prod'
+    depends_on:
+      - mysqldb
+    ports:
+      - 9000:9000
+    networks:
+      - shared-network
+    healthcheck:
+      test: ["CMD", "curl", "http://api-prod:9000"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+    restart: unless-stopped
+
+  app-prod:
+    container_name: react_app_prod
+    image: react-app-prod:1.0.0
+    build:
+      context: react-cars-app
+      target: production
+      dockerfile: Dockerfile
+    command: yarn run start:prod
+    ports:
+      - 3000:3000
+    networks:
+      - shared-network
+    #    volumes:
+    #     - .:/usr/src/app
+    #    - /usr/src/app/node_modules
+    restart: unless-stopped
+
+networks:
+  shared-network:
+
+volumes:
+  db-config:
+  db-data:
