@@ -13,6 +13,7 @@ import { ComponentsModule } from './components/components.module';
     GraphQLModule.forRoot({
       playground: true,
       debug: true,
+      introspection:true,
       autoSchemaFile: true,
     }),
     ComponentsModule,
